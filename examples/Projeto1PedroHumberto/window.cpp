@@ -37,7 +37,6 @@ void Window::onCreate() {
   fmt::print("Point size: {:.2f} (min), {:.2f} (max)\n", sizes.at(0),
              sizes.at(1));
 
-  // comentario do Pedro
   m_P.x = 0.0f;
   m_P.y = 0.0f;
   float t = 0.0;
