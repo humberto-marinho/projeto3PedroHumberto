@@ -24,7 +24,8 @@ void Window::onCreate() {
        {.source = fragmentShader, .stage = abcg::ShaderStage::Fragment}});
 
   // Clear window
-  abcg::glClearColor(0, 0, 0, 1);
+  abcg::glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b,
+                     m_clearColor.a);
   abcg::glClear(GL_COLOR_BUFFER_BIT);
 
   std::array<GLfloat, 2> sizes{};
@@ -62,8 +63,8 @@ void Window::onPaint() {
   // End using the shader program
   abcg::glUseProgram(0);
 
-  float R = 0.9;  // Raio do círculo maior
-  float r = 0.36; // Raio do círculo menor (gerador)
+  float R = 0.21; // Raio do círculo maior
+  float r = 0.10; // Raio do círculo menor (gerador)
   float d = 0.18; // Distância do ponto de rastreamento
   m_P.x = (R - r) * cos(t) + d * cos((R - r) * t / r);
   m_P.y = (R - r) * sin(t) - d * sin((R - r) * t / r);
@@ -80,6 +81,15 @@ void Window::onPaintUI() {
     ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoDecoration);
 
     if (ImGui::Button("Clear window", ImVec2(150, 30))) {
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    // Edit background color
+    if (ImGui::ColorEdit3("Background", &m_clearColor.r,
+                          ImGuiColorEditFlags_NoTooltip |
+                              ImGuiColorEditFlags_NoPicker)) {
+      abcg::glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b,
+                         m_clearColor.a);
       abcg::glClear(GL_COLOR_BUFFER_BIT);
     }
 
