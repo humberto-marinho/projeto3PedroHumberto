@@ -37,9 +37,10 @@ void Window::onCreate() {
   fmt::print("Point size: {:.2f} (min), {:.2f} (max)\n", sizes.at(0),
              sizes.at(1));
 
+  // comentario do Pedro
   m_P.x = 0.0f;
   m_P.y = 0.0f;
- float t = 0.0;
+  float t = 0.0;
 }
 
 void Window::onPaint() {
@@ -63,8 +64,8 @@ void Window::onPaint() {
   abcg::glUseProgram(0);
 
   float R = 0.9;  // Raio do círculo maior
-  float r = 0.36;  // Raio do círculo menor (gerador)
-  float d = 0.18;  // Distância do ponto de rastreamento
+  float r = 0.36; // Raio do círculo menor (gerador)
+  float d = 0.18; // Distância do ponto de rastreamento
   m_P.x = (R - r) * cos(t) + d * cos((R - r) * t / r);
   m_P.y = (R - r) * sin(t) - d * sin((R - r) * t / r);
   t += 0.01;
