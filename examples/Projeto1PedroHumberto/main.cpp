@@ -6,8 +6,9 @@ int main(int argc, char **argv) {
 
     Window window;
     window.setOpenGLSettings({.samples = 2, .doubleBuffering = false});
-    window.setWindowSettings({.width = 600,
-                              .height = 600,
+    window.setWindowSettings({.width = 1000,
+                              .height = 1000,
+                              .showFPS = false,
                               .showFullscreenButton = false,
                               .title = "Projeto 1 Pedro e Humberto"});
 

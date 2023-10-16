@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include <string>
 
 void Window::onCreate() {
   auto const *vertexShader{R"gl(#version 300 es
@@ -37,18 +38,18 @@ void Window::onCreate() {
 #endif
   fmt::print("Point size: {:.2f} (min), {:.2f} (max)\n", sizes.at(0),
              sizes.at(1));
-
-  m_P.x = 0.0f;
-  m_P.y = 0.0f;
-  float t = 0.0;
 }
 
 void Window::onPaint() {
+  if (m_stop_draw) {
+    return;
+  }
+
   // Create OpenGL buffers for drawing the point at m_P
   setupModel();
 
   // Set the viewport
-  abcg::glViewport(0, 0, m_viewportSize.x, m_viewportSize.y);
+  abcg::glViewport(200, 0, 600, 600);
 
   // Start using the shader program
   abcg::glUseProgram(m_program);
@@ -63,21 +64,16 @@ void Window::onPaint() {
   // End using the shader program
   abcg::glUseProgram(0);
 
-  float R = 0.21; // Raio do círculo maior
-  float r = 0.10; // Raio do círculo menor (gerador)
-  float d = 0.18; // Distância do ponto de rastreamento
-  m_P.x = (R - r) * cos(t) + d * cos((R - r) * t / r);
-  m_P.y = (R - r) * sin(t) - d * sin((R - r) * t / r);
-  t += 0.01;
-  // Print coordinates to console
-  // fmt::print("({:+.2f}, {:+.2f})\n", m_P.x, m_P.y);
+  m_P.x = (m_R - m_r) * cos(m_t) + m_d * cos((m_R - m_r) * m_t / m_r);
+  m_P.y = (m_R - m_r) * sin(m_t) - m_d * sin((m_R - m_r) * m_t / m_r);
+  m_t += m_t_inc;
 }
 
 void Window::onPaintUI() {
   abcg::OpenGLWindow::onPaintUI();
 
   {
-    ImGui::SetNextWindowPos(ImVec2(5, 81));
+    ImGui::SetNextWindowPos(ImVec2(5, 5));
     ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoDecoration);
 
     if (ImGui::Button("Clear window", ImVec2(150, 30))) {
@@ -86,11 +82,35 @@ void Window::onPaintUI() {
 
     // Edit background color
     if (ImGui::ColorEdit3("Background", &m_clearColor.r,
-                          ImGuiColorEditFlags_NoTooltip |
-                              ImGuiColorEditFlags_NoPicker)) {
+                          ImGuiColorEditFlags_NoSmallPreview)) {
       abcg::glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b,
                          m_clearColor.a);
       abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    if (ImGui::DragFloat("velocidade do traçado", &m_t_inc, 0.001f, 0.001f,
+                         1.0f)) {
+      m_t = 0.0f;
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+    if (ImGui::DragFloat("R", &m_R, 0.001f, 0.01f, 0.95f)) {
+      m_t = 0.0f;
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+    if (ImGui::DragFloat("r", &m_r, 0.001f, 0.01f, 0.95f)) {
+      m_t = 0.0f;
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+    if (ImGui::DragFloat("d", &m_d, 0.001f, 0.01f, 0.95f)) {
+      m_t = 0.0f;
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    if (ImGui::Button(
+            ((!m_stop_draw ? std::string("Stop") : std::string("Continue")) +
+             std::string(" drawing"))
+                .c_str())) {
+      m_stop_draw = !m_stop_draw;
     }
 
     ImGui::End();

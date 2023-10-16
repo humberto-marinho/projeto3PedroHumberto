@@ -20,10 +20,15 @@ private:
   GLuint m_VAO{};
   GLuint m_VBOVertices{};
   GLuint m_program{};
-  glm::vec2 m_P{};
+  glm::vec2 m_P{0.0f, 0.0f};
 
   void setupModel();
-  float t{};
+  float m_R{0.9f};
+  float m_r{0.3f};
+  float m_d{0.3};
+  float m_t{0.0f};
+  float m_t_inc{0.01f};
+  bool m_stop_draw{false};
 };
 
 #endif
