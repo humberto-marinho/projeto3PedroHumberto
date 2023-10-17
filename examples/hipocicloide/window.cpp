@@ -41,6 +41,7 @@ void Window::onCreate() {
 }
 
 void Window::onPaint() {
+  // Skip rendering if stop drawing button was pressed
   if (m_stop_draw) {
     return;
   }
@@ -64,48 +65,66 @@ void Window::onPaint() {
   // End using the shader program
   abcg::glUseProgram(0);
 
+  // Hypocicloid x coordinate function
   m_P.x = (m_R - m_r) * cos(m_t) + m_d * cos((m_R - m_r) * m_t / m_r);
+
+  // Hypocicloid y coordinate function
   m_P.y = (m_R - m_r) * sin(m_t) - m_d * sin((m_R - m_r) * m_t / m_r);
+
+  // Increment parametric variable
   m_t += m_t_inc;
 }
 
 void Window::onPaintUI() {
   abcg::OpenGLWindow::onPaintUI();
 
+  // Begin UI command prompt
   {
     ImGui::SetNextWindowPos(ImVec2(5, 5));
     ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoDecoration);
 
+    // Button to clear the window
     if (ImGui::Button("Clear window", ImVec2(150, 30))) {
       abcg::glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    // Edit background color
+    // Edit background color RGB fields
     if (ImGui::ColorEdit3("Background", &m_clearColor.r,
                           ImGuiColorEditFlags_NoSmallPreview)) {
+      // On background color change, changes clear color and clears window
       abcg::glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b,
                          m_clearColor.a);
       abcg::glClear(GL_COLOR_BUFFER_BIT);
     }
 
+    // Drag prompt for draw speed
     if (ImGui::DragFloat("velocidade do traçado", &m_t_inc, 0.001f, 0.001f,
                          1.0f)) {
-      m_t = 0.0f;
-      abcg::glClear(GL_COLOR_BUFFER_BIT);
-    }
-    if (ImGui::DragFloat("R", &m_R, 0.001f, 0.01f, 0.95f)) {
-      m_t = 0.0f;
-      abcg::glClear(GL_COLOR_BUFFER_BIT);
-    }
-    if (ImGui::DragFloat("r", &m_r, 0.001f, 0.01f, 0.95f)) {
-      m_t = 0.0f;
-      abcg::glClear(GL_COLOR_BUFFER_BIT);
-    }
-    if (ImGui::DragFloat("d", &m_d, 0.001f, 0.01f, 0.95f)) {
-      m_t = 0.0f;
+      m_t = 0.0f; // Resets parametric variable to start value
       abcg::glClear(GL_COLOR_BUFFER_BIT);
     }
 
+    // Bigger circle radius drag prompt
+    if (ImGui::DragFloat("R", &m_R, 0.001f, 0.01f, 0.95f)) {
+      m_t = 0.0f; // Resets parametric variable to start value
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    // Smaller circle radius drag prompt
+    if (ImGui::DragFloat("r", &m_r, 0.001f, 0.01f, 0.95f)) {
+      m_t = 0.0f; // Resets parametric variable to start value
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    // The "d" parameter in the hypocycloid equation represents the offset
+    // or distance between the center of the smaller circle and
+    // the reference point (or starting point) on the curve.
+    if (ImGui::DragFloat("d", &m_d, 0.001f, 0.01f, 0.95f)) {
+      m_t = 0.0f; // Resets parametric variable to start value
+      abcg::glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    // Stop/Continue drawing button
     if (ImGui::Button(
             ((!m_stop_draw ? std::string("Stop") : std::string("Continue")) +
              std::string(" drawing"))

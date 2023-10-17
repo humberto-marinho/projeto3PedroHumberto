@@ -1,2 +1,2 @@
 #add_subdirectory(helloworld)
-add_subdirectory(Projeto1PedroHumberto)
+add_subdirectory(hipocicloide)

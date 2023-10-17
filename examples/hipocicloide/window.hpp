@@ -20,14 +20,29 @@ private:
   GLuint m_VAO{};
   GLuint m_VBOVertices{};
   GLuint m_program{};
+
+  // Point to be draw
   glm::vec2 m_P{0.0f, 0.0f};
 
   void setupModel();
+
+  // Bigger circle radius
   float m_R{0.9f};
+
+  // Smaller circle radius
   float m_r{0.3f};
+
+  // Offset between the center of the smaller circle and
+  // the reference point m_P
   float m_d{0.3};
+
+  // Parametric variable
   float m_t{0.0f};
+
+  // Parametric value increment
   float m_t_inc{0.01f};
+
+  // Skip render flag
   bool m_stop_draw{false};
 };
 
