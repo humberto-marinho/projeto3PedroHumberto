@@ -50,16 +50,14 @@ void Camera::pan(float speed) {
 }
 void Camera::rotateAroundVectorZ(float speed) {
   // Compute a vector that points along the camera's local Z-axis
-  glm::vec3 zAxis = glm::vec3(0.0f, 0.0f, 1.0f);
+  auto const forward{glm::normalize(m_at - m_eye)};
 
   glm::mat4 transform{1.0f};
 
   // Rotate camera around its local z axis
-  transform = glm::translate(transform, m_eye);
-  transform = glm::rotate(transform, -speed, zAxis);
-  transform = glm::translate(transform, -m_eye);
+  transform = glm::rotate(transform, -speed, forward);
 
-  m_at = transform * glm::vec4(m_at, 1.0f);
+  m_up =glm::vec3( transform * glm::vec4(m_up, 0.0f));
   computeViewMatrix();
 }
 void Camera::rotateAroundVectorX(float speed) {
