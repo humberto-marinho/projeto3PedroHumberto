@@ -55,7 +55,11 @@ void Camera::rotateAroundVectorZ(float speed) {
   glm::mat4 transform{1.0f};
   // Rotate camera around its local z axis
   transform = glm::rotate(transform, -speed, forward);
-  m_up =glm::vec3( transform * glm::vec4(m_up, 0.0f));
+  m_up = glm::vec3(transform * glm::vec4(m_up, 0.0f));
+
+  // Ensure the up vector is normalized
+  m_up = glm::normalize(m_up);
+
   computeViewMatrix();
 }
 void Camera::rotateAroundVectorX(float speed) {

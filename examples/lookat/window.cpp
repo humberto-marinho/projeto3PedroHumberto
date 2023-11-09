@@ -33,7 +33,11 @@ void Window::onEvent(SDL_Event const &event) {
     if (event.key.keysym.sym == SDLK_g)
       m_xSpeed = -1.0f;
   }
-  if (event.type == SDL_KEYUP) {
+  else if (event.type == SDL_KEYUP) {
+    if (event.key.keysym.sym == SDLK_r && m_zSpeed != 0)
+      m_zSpeed = 0.0f;
+    if (event.key.keysym.sym == SDLK_t && m_zSpeed != 0)
+      m_zSpeed = 0.0f;
     if ((event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_w) &&
         m_dollySpeed > 0)
       m_dollySpeed = 0.0f;
@@ -51,10 +55,6 @@ void Window::onEvent(SDL_Event const &event) {
       m_truckSpeed = 0.0f;
     if (event.key.keysym.sym == SDLK_e && m_truckSpeed > 0)
       m_truckSpeed = 0.0f;
-    if (event.key.keysym.sym == SDLK_r && m_zSpeed < 0)
-      m_zSpeed = 0.0f;
-    if (event.key.keysym.sym == SDLK_t && m_zSpeed > 0)
-      m_zSpeed = 0.0f;
     if (event.key.keysym.sym == SDLK_f &&
       m_xSpeed > 0)
       m_xSpeed = 0.0f;
