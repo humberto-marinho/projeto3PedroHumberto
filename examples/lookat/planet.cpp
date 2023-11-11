@@ -23,8 +23,10 @@ void Planet::create() {
                                  {.source = assetsPath + "earth.frag",
                                   .stage = abcg::ShaderStage::Fragment}});
 
+  m_viewMatrixLocation = abcg::glGetUniformLocation(m_program, "viewMatrix");
+  m_projMatrixLocation = abcg::glGetUniformLocation(m_program, "projMatrix");
   m_modelMatrixLocation = abcg::glGetUniformLocation(m_program, "modelMatrix");
-  m_colorLocation = abcg::glGetUniformLocation(m_program, "color");
+  // m_colorLocation = abcg::glGetUniformLocation(m_program, "color");
 
   // Load model
   loadModelFromFile(assetsPath + "earth.obj");
@@ -73,11 +75,10 @@ void Planet::paint() {
   glm::mat4 model{1.0f};
 
   model = glm::mat4(1.0);
-  model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
-  model = glm::scale(model, glm::vec3(1.0f));
+  model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+  model = glm::scale(model, glm::vec3(2.0f));
 
   abcg::glUniformMatrix4fv(m_modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
-  abcg::glUniform4f(m_colorLocation, 0.0f, 1.0f, 0.0f, 1.0f);
   abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
                        nullptr);
 
@@ -88,8 +89,6 @@ void Planet::destroy() {
   abcg::glDeleteBuffers(1, &m_VBO);
   abcg::glDeleteVertexArrays(1, &m_VAO);
 }
-
-GLuint Planet::getProgram() { return m_program; }
 
 void Planet::loadModelFromFile(std::string_view path) {
   tinyobj::ObjReader reader;

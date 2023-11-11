@@ -15,7 +15,11 @@ public:
   void paint();
   void destroy();
 
-  GLuint getProgram();
+  GLuint const &getProgram() const { return m_program; };
+
+  GLint const &getViewMatrix() const { return m_viewMatrixLocation; };
+  GLint const &getProjMatrix() const { return m_projMatrixLocation; };
+  GLint const &getModelMatrix() const { return m_modelMatrixLocation; };
 
 private:
   GLuint m_program{};
@@ -23,8 +27,10 @@ private:
   GLuint m_VBO{};
   GLuint m_EBO{};
 
+  GLint m_viewMatrixLocation{};
+  GLint m_projMatrixLocation{};
   GLint m_modelMatrixLocation{};
-  GLint m_colorLocation{};
+  // GLint m_colorLocation{};
 
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
