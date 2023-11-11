@@ -32,8 +32,7 @@ void Window::onEvent(SDL_Event const &event) {
       m_xSpeed = 1.0f;
     if (event.key.keysym.sym == SDLK_g)
       m_xSpeed = -1.0f;
-  }
-  else if (event.type == SDL_KEYUP) {
+  } else if (event.type == SDL_KEYUP) {
     if (event.key.keysym.sym == SDLK_r && m_zSpeed != 0)
       m_zSpeed = 0.0f;
     if (event.key.keysym.sym == SDLK_t && m_zSpeed != 0)
@@ -55,13 +54,10 @@ void Window::onEvent(SDL_Event const &event) {
       m_truckSpeed = 0.0f;
     if (event.key.keysym.sym == SDLK_e && m_truckSpeed > 0)
       m_truckSpeed = 0.0f;
-    if (event.key.keysym.sym == SDLK_f &&
-      m_xSpeed > 0)
+    if (event.key.keysym.sym == SDLK_f && m_xSpeed > 0)
       m_xSpeed = 0.0f;
-    if (event.key.keysym.sym == SDLK_g &&
-      m_xSpeed < 0)
+    if (event.key.keysym.sym == SDLK_g && m_xSpeed < 0)
       m_xSpeed = 0.0f;
-    
   }
 }
 
@@ -125,6 +121,8 @@ void Window::onCreate() {
 
   // End of binding to current VAO
   abcg::glBindVertexArray(0);
+
+  m_planet.create();
 }
 
 void Window::loadModelFromFile(std::string_view path) {
@@ -243,6 +241,20 @@ void Window::onPaint() {
   m_ground.paint();
 
   abcg::glUseProgram(0);
+
+  // ------------------------------
+  abcg::glUseProgram(m_planet.getProgram());
+
+  // Set uniform variables for viewMatrix and projMatrix
+  // These matrices are used for every scene object
+  abcg::glUniformMatrix4fv(m_viewMatrixLocation, 1, GL_FALSE,
+                           &m_camera.getViewMatrix()[0][0]);
+  abcg::glUniformMatrix4fv(m_projMatrixLocation, 1, GL_FALSE,
+                           &m_camera.getProjMatrix()[0][0]);
+
+  m_planet.paint();
+
+  abcg::glUseProgram(0);
 }
 
 void Window::onPaintUI() { abcg::OpenGLWindow::onPaintUI(); }
@@ -268,6 +280,6 @@ void Window::onUpdate() {
   m_camera.dolly(m_dollySpeed * deltaTime);
   m_camera.truck(m_truckSpeed * deltaTime);
   m_camera.pan(m_panSpeed * deltaTime);
-  m_camera.rotateAroundVectorZ(m_zSpeed  * deltaTime);
-  m_camera.rotateAroundVectorX(m_xSpeed  * deltaTime);
+  m_camera.rotateAroundVectorZ(m_zSpeed * deltaTime);
+  m_camera.rotateAroundVectorX(m_xSpeed * deltaTime);
 }

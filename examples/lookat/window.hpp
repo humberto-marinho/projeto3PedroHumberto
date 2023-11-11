@@ -5,12 +5,7 @@
 
 #include "camera.hpp"
 #include "ground.hpp"
-
-struct Vertex {
-  glm::vec3 position;
-
-  friend bool operator==(Vertex const &, Vertex const &) = default;
-};
+#include "planet.hpp"
 
 class Window : public abcg::OpenGLWindow {
 protected:
@@ -44,6 +39,7 @@ private:
   float m_xSpeed{};
 
   Ground m_ground;
+  Planet m_planet;
 
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
