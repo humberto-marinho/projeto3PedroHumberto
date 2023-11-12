@@ -26,7 +26,6 @@ void Planet::create() {
   m_viewMatrixLocation = abcg::glGetUniformLocation(m_program, "viewMatrix");
   m_projMatrixLocation = abcg::glGetUniformLocation(m_program, "projMatrix");
   m_modelMatrixLocation = abcg::glGetUniformLocation(m_program, "modelMatrix");
-  // m_colorLocation = abcg::glGetUniformLocation(m_program, "color");
 
   // Load model
   loadModelFromFile(assetsPath + "earth.obj");
@@ -71,10 +70,12 @@ void Planet::paint() {
 
   abcg::glBindVertexArray(m_VAO);
 
-  // Draw green earth
+  // Draw planet
   glm::mat4 model{1.0f};
 
   model = glm::mat4(1.0);
+
+  // Translates upwards and doubles the scale
   model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
   model = glm::scale(model, glm::vec3(2.0f));
 

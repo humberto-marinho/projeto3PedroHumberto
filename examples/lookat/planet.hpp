@@ -30,7 +30,6 @@ private:
   GLint m_viewMatrixLocation{};
   GLint m_projMatrixLocation{};
   GLint m_modelMatrixLocation{};
-  // GLint m_colorLocation{};
 
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
