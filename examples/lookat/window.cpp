@@ -228,7 +228,28 @@ void Window::onPaint() {
   abcg::glUseProgram(0);
 }
 
-void Window::onPaintUI() { abcg::OpenGLWindow::onPaintUI(); }
+void Window::onPaintUI() {
+  abcg::OpenGLWindow::onPaintUI();
+
+  {
+    auto flags{ImGuiWindowFlags_NoResize};
+
+    glm::ivec2 winSize{160, 100};
+    ImGui::SetNextWindowSize(ImVec2(winSize.x, winSize.y));
+    ImGui::SetNextWindowPos(ImVec2(m_viewportSize.x - winSize.x, 0));
+
+    ImGui::Begin("Helpers", nullptr, flags);
+
+    ImGui::Text("Current position:\n(%.0f, %.0f, %.0f)", m_camera.getEye().x,
+                m_camera.getEye().y, m_camera.getEye().z);
+
+    if (ImGui::Button("Initial position")) {
+      m_camera.resetPosition();
+    }
+
+    ImGui::End();
+  }
+}
 
 void Window::onResize(glm::ivec2 const &size) {
   m_viewportSize = size;
