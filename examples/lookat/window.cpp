@@ -185,6 +185,8 @@ void Window::onPaint() {
 
   abcg::glUseProgram(m_program);
 
+  abcg::glBindVertexArray(m_VAO);
+
   // Set uniform variables for viewMatrix and projMatrix
   // These matrices are used for every scene object
   abcg::glUniformMatrix4fv(m_viewMatrixLocation, 1, GL_FALSE,
@@ -192,12 +194,25 @@ void Window::onPaint() {
   abcg::glUniformMatrix4fv(m_projMatrixLocation, 1, GL_FALSE,
                            &m_camera.getProjMatrix()[0][0]);
 
+  // Draw red bunny inside planet
+  glm::mat4 model{1.0f};
+  model = glm::mat4(1.0);
+  model = glm::translate(model, glm::vec3(0.0f, 3.0f, 0.0f));
+  model = glm::scale(model, glm::vec3(0.5f));
+
+  abcg::glUniformMatrix4fv(m_modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
+  abcg::glUniform4f(m_colorLocation, 1.0f, 0.25f, 0.25f, 1.0f);
+  abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
+                       nullptr);
+
+  abcg::glBindVertexArray(0);
+
   // Draw ground
-  // m_ground.paint();
+  m_ground.paint();
 
   abcg::glUseProgram(0);
 
-  // ------------------------------
+  // Setup to draw planet
   abcg::glUseProgram(m_planet.getProgram());
 
   // Set uniform variables for viewMatrix and projMatrix
@@ -207,6 +222,7 @@ void Window::onPaint() {
   abcg::glUniformMatrix4fv(m_planet.getProjMatrix(), 1, GL_FALSE,
                            &m_camera.getProjMatrix()[0][0]);
 
+  // Draw planet
   m_planet.paint();
 
   abcg::glUseProgram(0);
