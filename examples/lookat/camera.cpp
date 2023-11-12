@@ -86,3 +86,9 @@ void Camera::resetPosition() {
   m_at = {0.0f, 0.5f, 0.0f};  // Look-at initial point
   m_up = {0.0f, 1.0f, 0.0f};  // Initial "up" direction
 }
+
+void Camera::moveY(float speed) {
+    m_eye += m_up * speed;
+    m_at += m_up * speed;
+    computeViewMatrix();
+}

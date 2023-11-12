@@ -37,6 +37,7 @@ private:
   float y_panSpeed{};
   float m_zSpeed{};
   float m_xSpeed{};
+  float m_YSpeed{};
 
   Ground m_ground;
   Planet m_planet;

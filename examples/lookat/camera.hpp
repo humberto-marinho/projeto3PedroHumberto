@@ -14,6 +14,7 @@ public:
   void pan(float speed);
   void rotateAroundVectorZ(float speed);
   void rotateAroundVectorX(float speed);
+  void moveY(float speed);
   void resetPosition();
 
   glm::mat4 const &getViewMatrix() const { return m_viewMatrix; }

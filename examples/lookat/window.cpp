@@ -32,6 +32,10 @@ void Window::onEvent(SDL_Event const &event) {
       m_xSpeed = 1.0f;
     if (event.key.keysym.sym == SDLK_g)
       m_xSpeed = -1.0f;
+    if (event.key.keysym.sym == SDLK_x)
+      m_YSpeed = 1.0f;
+    if (event.key.keysym.sym == SDLK_z)
+      m_YSpeed = -1.0f;
   } else if (event.type == SDL_KEYUP) {
     if (event.key.keysym.sym == SDLK_r && m_zSpeed != 0)
       m_zSpeed = 0.0f;
@@ -58,6 +62,10 @@ void Window::onEvent(SDL_Event const &event) {
       m_xSpeed = 0.0f;
     if (event.key.keysym.sym == SDLK_g && m_xSpeed < 0)
       m_xSpeed = 0.0f;
+    if (event.key.keysym.sym == SDLK_x && m_YSpeed > 0)
+      m_YSpeed = 0.0f;
+    if (event.key.keysym.sym == SDLK_z && m_YSpeed < 0)
+      m_YSpeed = 0.0f;
   }
 }
 
@@ -274,4 +282,5 @@ void Window::onUpdate() {
   m_camera.pan(m_panSpeed * deltaTime);
   m_camera.rotateAroundVectorZ(m_zSpeed * deltaTime);
   m_camera.rotateAroundVectorX(m_xSpeed * deltaTime);
+  m_camera.moveY(m_YSpeed*deltaTime);
 }
