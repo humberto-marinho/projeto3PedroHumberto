@@ -115,15 +115,11 @@ void Planet::create() {
   abcg::glEnable(GL_DEPTH_TEST);
 
   // Create program
-  m_program =
-      abcg::createOpenGLProgram({{.source = assetsPath + "earth.vert",
-                                  .stage = abcg::ShaderStage::Vertex},
-                                 {.source = assetsPath + "earth.frag",
-                                  .stage = abcg::ShaderStage::Fragment}});
-
-  m_viewMatrixLocation = abcg::glGetUniformLocation(m_program, "viewMatrix");
-  m_projMatrixLocation = abcg::glGetUniformLocation(m_program, "projMatrix");
-  m_modelMatrixLocation = abcg::glGetUniformLocation(m_program, "modelMatrix");
+m_program =
+  abcg::createOpenGLProgram({
+    {"source", assetsPath + "earth.vert", "stage", abcg::ShaderStage::Vertex},
+    {"source", assetsPath + "earth.frag", "stage", abcg::ShaderStage::Fragment}
+  });
 
   // Load model
   loadModelFromFile(assetsPath + "earth.obj");
