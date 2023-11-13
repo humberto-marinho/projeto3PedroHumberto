@@ -1,3 +1,3 @@
 #add_subdirectory(helloworld)
 #add_subdirectory(hipocicloide)
-add_subdirectory(lookat)
+add_subdirectory(projeto2PedroHumberto)
