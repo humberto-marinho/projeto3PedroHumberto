@@ -1,3 +1,3 @@
-project(lookat)
+project(projeto2PedroHumberto)
 add_executable(${PROJECT_NAME} camera.cpp ground.cpp main.cpp window.cpp planet.cpp)
 enable_abcg(${PROJECT_NAME})
