@@ -6,11 +6,12 @@
 
 class Planet : public Model {
 public:
-  Planet(std::string name)
-      : Model(name) {} // construtor filho chama construtor pai
+  Planet(std::string objName, std::string shadersName)
+      : Model(objName, shadersName) {} // construtor filho chama construtor pai
 
   void create();
-  void paint();
+  void render(glm::mat4 viewMat, glm::mat4 projMat,
+              glm::vec4 lightDir) override;
 };
 
 #endif

@@ -19,16 +19,6 @@ protected:
 private:
   glm::ivec2 m_viewportSize{};
 
-  GLuint m_VAO{};
-  GLuint m_VBO{};
-  GLuint m_EBO{};
-  GLuint m_program{};
-
-  GLint m_viewMatrixLocation{};
-  GLint m_projMatrixLocation{};
-  GLint m_modelMatrixLocation{};
-  GLint m_colorLocation{};
-
   Camera m_camera;
   float m_dollySpeed{};
   float m_truckSpeed{};
@@ -38,12 +28,9 @@ private:
   float m_xSpeed{};
   float m_YSpeed{};
 
-  Planet m_planet{"earth"};
+  glm::vec4 m_lightDir{-1.0f, -1.0f, -1.0f, 0.0f};
 
-  std::vector<Vertex> m_vertices;
-  std::vector<GLuint> m_indices;
-
-  void loadModelFromFile(std::string_view path);
+  Planet m_planet{"earth", "earth"};
 };
 
 #endif

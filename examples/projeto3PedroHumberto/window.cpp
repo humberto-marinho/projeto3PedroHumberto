@@ -67,20 +67,9 @@ void Window::onPaint() {
 
   abcg::glViewport(0, 0, m_viewportSize.x, m_viewportSize.y);
 
-  // Setup to draw planet
-  abcg::glUseProgram(m_planet.getProgram());
-
-  // Set uniform variables for viewMatrix and projMatrix
-  // These matrices are used for every scene object
-  abcg::glUniformMatrix4fv(m_planet.getViewMatrix(), 1, GL_FALSE,
-                           &m_camera.getViewMatrix()[0][0]);
-  abcg::glUniformMatrix4fv(m_planet.getProjMatrix(), 1, GL_FALSE,
-                           &m_camera.getProjMatrix()[0][0]);
-
   // Draw planet
-  m_planet.paint();
-
-  abcg::glUseProgram(0);
+  m_planet.render(m_camera.getViewMatrix(), m_camera.getProjMatrix(),
+                  m_lightDir);
 }
 
 void Window::onPaintUI() {
