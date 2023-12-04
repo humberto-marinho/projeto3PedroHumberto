@@ -6,21 +6,7 @@
 // void Planet::create() { Model::create(); }
 
 void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
-  /*
-   * Binding resources
-   */
   abcg::glUseProgram(m_program);
-  abcg::glBindVertexArray(m_VAO);
-  abcg::glActiveTexture(GL_TEXTURE0);
-  abcg::glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);
-
-  // Set minification and magnification parameters
-  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  // Set texture wrapping parameters
-  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   /*
    * Getting locations...
@@ -55,16 +41,15 @@ void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
   m_modelMatrix = glm::mat4(1.0); // isso vai quebrar no onUpdate?
 
   // Translates upwards and doubles the scale
-  m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(0.0f, 3.0f, 0.0f));
+  // m_modelMatrix = glm::translate(m_modelMatrix, glm::vec3(0.0f, 3.0f, 0.0f));
   m_modelMatrix = glm::scale(m_modelMatrix, glm::vec3(2.0f));
-
-  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &m_modelMatrix[0][0]);
-  abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
-                       nullptr);
 
   /*
    * Setting uniforms
    */
+  // Set uniform variable for modelMatrix
+  abcg::glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, &m_modelMatrix[0][0]);
+
   // Set uniform variables for viewMatrix and projMatrix
   abcg::glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, &viewMat[0][0]);
   abcg::glUniformMatrix4fv(projMatrixLoc, 1, GL_FALSE, &projMat[0][0]);
@@ -88,6 +73,27 @@ void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
   abcg::glUniform4fv(KdLoc, 1, &m_Kd.x);
   abcg::glUniform4fv(KsLoc, 1, &m_Ks.x);
   abcg::glUniform1f(shininessLoc, m_shininess);
+
+  /*
+   * Binding resources
+   */
+  abcg::glBindVertexArray(m_VAO);
+  abcg::glActiveTexture(GL_TEXTURE0);
+  abcg::glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);
+
+  // Set minification and magnification parameters
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // Set texture wrapping parameters
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  /*
+   * Draws
+   */
+  abcg::glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT,
+                       nullptr);
 
   /*
    * Freeing resources

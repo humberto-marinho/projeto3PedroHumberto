@@ -1,6 +1,8 @@
+#include <cstdio>
 #include <filesystem>
 #include <unordered_map>
 
+#include "core.h"
 #include "model.hpp"
 
 // Explicit specialization of std::hash for Vertex
@@ -27,7 +29,10 @@ void Model::create() {
         .stage = abcg::ShaderStage::Fragment}});
 
   // Load model
-  loadDiffuseTexture(assetsPath + "maps/pattern.png"); // mudar esse cara
+  fmt::println(stdout, "Trying to load: {}",
+               assetsPath + "maps/roman_lamp_diffuse.jpg");
+  loadDiffuseTexture(assetsPath +
+                     "maps/roman_lamp_diffuse.jpg"); // mudar esse cara
   loadObj(assetsPath + m_objName + ".obj");
   setupVAO(m_program);
 }
@@ -107,7 +112,7 @@ void Model::destroy() {
   abcg::glDeleteProgram(m_program);
 }
 
-void Model::loadObj(std::string_view path) {
+void Model::loadObj(std::string_view path, bool standard) {
   auto const basePath{std::filesystem::path{path}.parent_path().string() + "/"};
 
   tinyobj::ObjReaderConfig readerConfig;
@@ -205,6 +210,10 @@ void Model::loadObj(std::string_view path) {
     m_shininess = 25.0f;
   }
 
+  if (standard) {
+    standardize();
+  }
+
   if (!m_hasNormals) {
     computeNormals();
   }
@@ -250,4 +259,23 @@ void Model::computeNormals() {
   }
 
   m_hasNormals = true;
+}
+
+void Model::standardize() {
+  // Center to origin and normalize largest bound to [-1, 1]
+
+  // Get bounds
+  glm::vec3 max(std::numeric_limits<float>::lowest());
+  glm::vec3 min(std::numeric_limits<float>::max());
+  for (auto const &vertex : m_vertices) {
+    max = glm::max(max, vertex.position);
+    min = glm::min(min, vertex.position);
+  }
+
+  // Center and scale
+  auto const center{(min + max) / 2.0f};
+  auto const scaling{2.0f / glm::length(max - min)};
+  for (auto &vertex : m_vertices) {
+    vertex.position = (vertex.position - center) * scaling;
+  }
 }

@@ -19,7 +19,7 @@ public:
     m_shadersName = shadersName;
   }
 
-  void loadObj(std::string_view path);
+  void loadObj(std::string_view path, bool standart = true);
   void loadDiffuseTexture(std::string_view path);
   virtual void render(glm::mat4, glm::mat4, glm::vec4) = 0;
   void setupVAO(GLuint program);
@@ -69,6 +69,7 @@ protected:
 
   void computeNormals();
   void createBuffers();
+  void standardize();
 };
 
 #endif

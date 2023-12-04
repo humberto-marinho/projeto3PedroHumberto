@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "abcgOpenGLFunction.hpp"
 
 void Window::onEvent(SDL_Event const &event) {
   if (event.type == SDL_KEYDOWN) {
