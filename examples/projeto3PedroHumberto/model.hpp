@@ -7,6 +7,7 @@
 struct Vertex {
   glm::vec3 position{};
   glm::vec3 normal{};
+  glm::vec2 texCoord{};
 
   friend bool operator==(Vertex const &, Vertex const &) = default;
 };
@@ -19,10 +20,13 @@ public:
   }
 
   void loadObj(std::string_view path);
+  void loadDiffuseTexture(std::string_view path);
   virtual void render(glm::mat4, glm::mat4, glm::vec4) = 0;
   void setupVAO(GLuint program);
   void create();
   void destroy();
+
+  [[nodiscard]] bool isUVMapped() const { return m_hasTexCoords; }
 
   // deletar?
   GLuint const &getProgram() const { return m_program; };
@@ -55,14 +59,16 @@ protected:
   glm::vec4 m_Kd{0.7f, 0.7f, 0.7f, 1.0f};
   glm::vec4 m_Ks{1.0f};
   float m_shininess{25.0f};
+  GLuint m_diffuseTexture{};
 
   std::vector<Vertex> m_vertices;
   std::vector<GLuint> m_indices;
 
   bool m_hasNormals{false};
+  bool m_hasTexCoords{false};
 
-  void createBuffers();
   void computeNormals();
+  void createBuffers();
 };
 
 #endif

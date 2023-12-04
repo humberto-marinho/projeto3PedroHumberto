@@ -3,7 +3,7 @@
 #include "model.hpp"
 #include "planet.hpp"
 
-void Planet::create() { Model::create(); }
+// void Planet::create() { Model::create(); }
 
 void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
   /*
@@ -11,6 +11,16 @@ void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
    */
   abcg::glUseProgram(m_program);
   abcg::glBindVertexArray(m_VAO);
+  abcg::glActiveTexture(GL_TEXTURE0);
+  abcg::glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);
+
+  // Set minification and magnification parameters
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // Set texture wrapping parameters
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   /*
    * Getting locations...
@@ -36,6 +46,9 @@ void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
   auto const KdLoc{abcg::glGetUniformLocation(m_program, "Kd")};
   auto const KsLoc{abcg::glGetUniformLocation(m_program, "Ks")};
 
+  // Textures locations
+  auto const diffuseTexLoc{abcg::glGetUniformLocation(m_program, "diffuseTex")};
+
   /*
    * Model matrix operations
    */
@@ -60,6 +73,9 @@ void Planet::render(glm::mat4 viewMat, glm::mat4 projMat, glm::vec4 lightDir) {
   auto const modelViewMatrix{glm::mat3(viewMat * m_modelMatrix)};
   auto const normalMatrix{glm::inverseTranspose(modelViewMatrix)};
   abcg::glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, &normalMatrix[0][0]);
+
+  // Set uniform variables for diffuse texture
+  abcg::glUniform1i(diffuseTexLoc, 0);
 
   // Sets uniform varialble for lightDirection
   abcg::glUniform4fv(lightDirLoc, 1, &lightDir.x);

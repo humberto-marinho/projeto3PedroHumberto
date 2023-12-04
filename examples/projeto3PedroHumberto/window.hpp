@@ -30,7 +30,7 @@ private:
 
   glm::vec4 m_lightDir{-1.0f, -1.0f, -1.0f, 0.0f};
 
-  Planet m_planet{"earth", "earth"};
+  Planet m_planet{"roman_lamp", "earth"};
 };
 
 #endif
