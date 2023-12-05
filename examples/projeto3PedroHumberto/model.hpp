@@ -14,9 +14,10 @@ struct Vertex {
 
 class Model {
 public:
-  Model(std::string objName, std::string shadersName) {
+  Model(std::string objName, std::string shadersName, std::string textureName) {
     m_objName = objName;
     m_shadersName = shadersName;
+    m_textureName = textureName;
   }
 
   void loadObj(std::string_view path, bool standart = true);
@@ -42,6 +43,7 @@ public:
 protected:
   std::string m_objName{};
   std::string m_shadersName{};
+  std::string m_textureName{};
 
   GLuint m_program{};
   GLuint m_VAO{};

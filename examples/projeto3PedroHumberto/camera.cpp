@@ -5,7 +5,7 @@
 void Camera::computeProjectionMatrix(glm::vec2 const &size) {
   m_projMatrix = glm::mat4(1.0f);
   auto const aspect{size.x / size.y};
-  m_projMatrix = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 5.0f);
+  m_projMatrix = glm::perspective(glm::radians(70.0f), aspect, 0.1f, 10.0f);
 }
 
 void Camera::computeViewMatrix() {
@@ -88,7 +88,7 @@ void Camera::resetPosition() {
 }
 
 void Camera::moveY(float speed) {
-    m_eye += m_up * speed;
-    m_at += m_up * speed;
-    computeViewMatrix();
+  m_eye += m_up * speed;
+  m_at += m_up * speed;
+  computeViewMatrix();
 }

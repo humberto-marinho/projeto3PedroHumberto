@@ -60,7 +60,10 @@ void Window::onEvent(SDL_Event const &event) {
   }
 }
 
-void Window::onCreate() { m_planet.create(); }
+void Window::onCreate() {
+  m_earth.create();
+  m_moon.create();
+}
 
 void Window::onPaint() {
   // Clear color buffer and depth buffer
@@ -69,8 +72,10 @@ void Window::onPaint() {
   abcg::glViewport(0, 0, m_viewportSize.x, m_viewportSize.y);
 
   // Draw planet
-  m_planet.render(m_camera.getViewMatrix(), m_camera.getProjMatrix(),
-                  m_lightDir);
+  m_earth.render(m_camera.getViewMatrix(), m_camera.getProjMatrix(),
+                 m_lightDir);
+
+  m_moon.render(m_camera.getViewMatrix(), m_camera.getProjMatrix(), m_lightDir);
 }
 
 void Window::onPaintUI() {
@@ -101,7 +106,10 @@ void Window::onResize(glm::ivec2 const &size) {
   m_camera.computeProjectionMatrix(size);
 }
 
-void Window::onDestroy() { m_planet.destroy(); }
+void Window::onDestroy() {
+  m_earth.destroy();
+  m_moon.destroy();
+}
 
 void Window::onUpdate() {
   auto const deltaTime{gsl::narrow_cast<float>(getDeltaTime())};
@@ -113,4 +121,7 @@ void Window::onUpdate() {
   m_camera.rotateAroundVectorZ(m_zSpeed * deltaTime);
   m_camera.rotateAroundVectorX(m_xSpeed * deltaTime);
   m_camera.moveY(m_YSpeed * deltaTime);
+
+  // Update objects
+  m_moon.update();
 }

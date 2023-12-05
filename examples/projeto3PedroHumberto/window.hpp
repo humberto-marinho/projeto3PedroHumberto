@@ -4,6 +4,7 @@
 #include "abcgOpenGL.hpp"
 
 #include "camera.hpp"
+#include "moon.hpp"
 #include "planet.hpp"
 
 class Window : public abcg::OpenGLWindow {
@@ -30,7 +31,8 @@ private:
 
   glm::vec4 m_lightDir{-1.0f, -1.0f, -1.0f, 0.0f};
 
-  Planet m_planet{"roman_lamp", "earth"};
+  Planet m_earth{"Earth", "earth", "Earth_Col_6K.png"};
+  Moon m_moon{"moon", "earth", "base color.jpg"}; // mudar esses caras
 };
 
 #endif

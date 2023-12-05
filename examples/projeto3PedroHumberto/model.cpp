@@ -29,10 +29,7 @@ void Model::create() {
         .stage = abcg::ShaderStage::Fragment}});
 
   // Load model
-  fmt::println(stdout, "Trying to load: {}",
-               assetsPath + "maps/roman_lamp_diffuse.jpg");
-  loadDiffuseTexture(assetsPath +
-                     "maps/roman_lamp_diffuse.jpg"); // mudar esse cara
+  loadDiffuseTexture(assetsPath + "maps/" + m_textureName);
   loadObj(assetsPath + m_objName + ".obj");
   setupVAO(m_program);
 }
