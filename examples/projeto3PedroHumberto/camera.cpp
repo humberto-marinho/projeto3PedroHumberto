@@ -82,8 +82,8 @@ void Camera::rotateAroundVectorX(float speed) {
 }
 
 void Camera::resetPosition() {
-  m_eye = {0.0f, 0.5f, 2.5f}; // Camera initial position
-  m_at = {0.0f, 0.5f, 0.0f};  // Look-at initial point
+  m_eye = {3.0f, 5.0f, 0.0f}; // Camera initial position
+  m_at = {0.0f, 0.0f, 0.0f};  // Look-at initial point
   m_up = {0.0f, 1.0f, 0.0f};  // Initial "up" direction
 }
 

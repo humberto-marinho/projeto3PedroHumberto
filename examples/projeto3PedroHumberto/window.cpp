@@ -124,4 +124,5 @@ void Window::onUpdate() {
 
   // Update objects
   m_moon.update();
+  m_earth.update();
 }
