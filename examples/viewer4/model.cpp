@@ -1,9 +1,7 @@
-#include <cstdio>
+#include "model.hpp"
+
 #include <filesystem>
 #include <unordered_map>
-
-#include "core.h"
-#include "model.hpp"
 
 // Explicit specialization of std::hash for Vertex
 template <> struct std::hash<Vertex> {
@@ -15,68 +13,36 @@ template <> struct std::hash<Vertex> {
   }
 };
 
-void Model::create() {
-  auto const &assetsPath{abcg::Application::getAssetsPath()};
-
-  // Enable depth buffering
-  abcg::glEnable(GL_DEPTH_TEST);
-
-  // Create program
-  m_program = abcg::createOpenGLProgram(
-      {{.source = assetsPath + "shaders/" + m_shadersName + ".vert",
-        .stage = abcg::ShaderStage::Vertex},
-       {.source = assetsPath + "shaders/" + m_shadersName + ".frag",
-        .stage = abcg::ShaderStage::Fragment}});
-
-  // Load model
-  loadDiffuseTexture(assetsPath + "maps/" + m_textureName);
-  loadObj(assetsPath + m_objName + ".obj");
-  setupVAO(m_program);
-}
-
-void Model::setupVAO(GLuint program) {
-  // Release previous VAO
-  abcg::glDeleteVertexArrays(1, &m_VAO);
-
-  // Create VAO
-  abcg::glGenVertexArrays(1, &m_VAO);
-  abcg::glBindVertexArray(m_VAO);
-
-  // Bind EBO and VBO
-  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-  abcg::glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-
-  // Bind vertex attributes
-  auto const positionAttribute{
-      abcg::glGetAttribLocation(program, "inPosition")};
-  if (positionAttribute >= 0) {
-    abcg::glEnableVertexAttribArray(positionAttribute);
-    abcg::glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE,
-                                sizeof(Vertex), nullptr);
+void Model::computeNormals() {
+  // Clear previous vertex normals
+  for (auto &vertex : m_vertices) {
+    vertex.normal = glm::vec3(0.0f);
   }
 
-  auto const normalAttribute{abcg::glGetAttribLocation(program, "inNormal")};
-  if (normalAttribute >= 0) {
-    abcg::glEnableVertexAttribArray(normalAttribute);
-    auto const offset{offsetof(Vertex, normal)};
-    abcg::glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE,
-                                sizeof(Vertex),
-                                reinterpret_cast<void *>(offset));
+  // Compute face normals
+  for (auto const offset : iter::range(static_cast<size_t>(0), m_indices.size(), static_cast<size_t>(3))) {
+    // Get face vertices
+    auto &a{m_vertices.at(m_indices.at(offset + 0))};
+    auto &b{m_vertices.at(m_indices.at(offset + 1))};
+    auto &c{m_vertices.at(m_indices.at(offset + 2))};
+
+    // Compute normal
+    auto const edge1{b.position - a.position};
+    auto const edge2{c.position - b.position};
+    auto const normal{glm::cross(edge1, edge2)};
+
+    // Accumulate on vertices
+    a.normal += normal;
+    b.normal += normal;
+    c.normal += normal;
   }
 
-  auto const texCoordAttribute{
-      abcg::glGetAttribLocation(program, "inTexCoord")};
-  if (texCoordAttribute >= 0) {
-    abcg::glEnableVertexAttribArray(texCoordAttribute);
-    auto const offset{offsetof(Vertex, texCoord)};
-    abcg::glVertexAttribPointer(texCoordAttribute, 2, GL_FLOAT, GL_FALSE,
-                                sizeof(Vertex),
-                                reinterpret_cast<void *>(offset));
+  // Normalize
+  for (auto &vertex : m_vertices) {
+    vertex.normal = glm::normalize(vertex.normal);
   }
 
-  // End of binding
-  abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
-  abcg::glBindVertexArray(0);
+  m_hasNormals = true;
 }
 
 void Model::createBuffers() {
@@ -84,7 +50,7 @@ void Model::createBuffers() {
   abcg::glDeleteBuffers(1, &m_EBO);
   abcg::glDeleteBuffers(1, &m_VBO);
 
-  // Generate VBO
+  // VBO
   abcg::glGenBuffers(1, &m_VBO);
   abcg::glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
   abcg::glBufferData(GL_ARRAY_BUFFER,
@@ -92,7 +58,7 @@ void Model::createBuffers() {
                      m_vertices.data(), GL_STATIC_DRAW);
   abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // Generate EBO
+  // EBO
   abcg::glGenBuffers(1, &m_EBO);
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
   abcg::glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -101,15 +67,15 @@ void Model::createBuffers() {
   abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Model::destroy() {
+void Model::loadDiffuseTexture(std::string_view path) {
+  if (!std::filesystem::exists(path))
+    return;
+
   abcg::glDeleteTextures(1, &m_diffuseTexture);
-  abcg::glDeleteBuffers(1, &m_VBO);
-  abcg::glDeleteBuffers(1, &m_EBO);
-  abcg::glDeleteVertexArrays(1, &m_VAO);
-  abcg::glDeleteProgram(m_program);
+  m_diffuseTexture = abcg::loadOpenGLTexture({.path = path});
 }
 
-void Model::loadObj(std::string_view path, bool standard) {
+void Model::loadObj(std::string_view path, bool standardize) {
   auto const basePath{std::filesystem::path{path}.parent_path().string() + "/"};
 
   tinyobj::ObjReaderConfig readerConfig;
@@ -207,8 +173,8 @@ void Model::loadObj(std::string_view path, bool standard) {
     m_shininess = 25.0f;
   }
 
-  if (standard) {
-    standardize();
+  if (standardize) {
+    Model::standardize();
   }
 
   if (!m_hasNormals) {
@@ -218,44 +184,71 @@ void Model::loadObj(std::string_view path, bool standard) {
   createBuffers();
 }
 
-void Model::loadDiffuseTexture(std::string_view path) {
-  if (!std::filesystem::exists(path))
-    return;
+void Model::render(int numTriangles) const {
+  abcg::glBindVertexArray(m_VAO);
 
-  abcg::glDeleteTextures(1, &m_diffuseTexture);
-  m_diffuseTexture = abcg::loadOpenGLTexture({.path = path});
+  abcg::glActiveTexture(GL_TEXTURE0);
+  abcg::glBindTexture(GL_TEXTURE_2D, m_diffuseTexture);
+
+  // Set minification and magnification parameters
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // Set texture wrapping parameters
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  abcg::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  auto const numIndices{(numTriangles < 0) ? m_indices.size()
+                                           : numTriangles * 3};
+
+  abcg::glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, nullptr);
+
+  abcg::glBindVertexArray(0);
 }
 
-void Model::computeNormals() {
-  // Clear previous vertex normals
-  for (auto &vertex : m_vertices) {
-    vertex.normal = glm::vec3(0.0f);
+void Model::setupVAO(GLuint program) {
+  // Release previous VAO
+  abcg::glDeleteVertexArrays(1, &m_VAO);
+
+  // Create VAO
+  abcg::glGenVertexArrays(1, &m_VAO);
+  abcg::glBindVertexArray(m_VAO);
+
+  // Bind EBO and VBO
+  abcg::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+  abcg::glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+
+  // Bind vertex attributes
+  auto const positionAttribute{
+      abcg::glGetAttribLocation(program, "inPosition")};
+  if (positionAttribute >= 0) {
+    abcg::glEnableVertexAttribArray(positionAttribute);
+    abcg::glVertexAttribPointer(positionAttribute, 3, GL_FLOAT, GL_FALSE,
+                                sizeof(Vertex), nullptr);
   }
 
-  // Compute face normals
-  for (auto const offset : iter::range<std::size_t>(0UL, m_indices.size(), 3UL)) {
-    // Get face vertices
-    auto &a{m_vertices.at(m_indices.at(offset + 0))};
-    auto &b{m_vertices.at(m_indices.at(offset + 1))};
-    auto &c{m_vertices.at(m_indices.at(offset + 2))};
-
-    // Compute normal
-    auto const edge1{b.position - a.position};
-    auto const edge2{c.position - b.position};
-    auto const normal{glm::cross(edge1, edge2)};
-
-    // Accumulate on vertices
-    a.normal += normal;
-    b.normal += normal;
-    c.normal += normal;
+  auto const normalAttribute{abcg::glGetAttribLocation(program, "inNormal")};
+  if (normalAttribute >= 0) {
+    abcg::glEnableVertexAttribArray(normalAttribute);
+    auto const offset{offsetof(Vertex, normal)};
+    abcg::glVertexAttribPointer(normalAttribute, 3, GL_FLOAT, GL_FALSE,
+                                sizeof(Vertex),
+                                reinterpret_cast<void *>(offset));
   }
 
-  // Normalize
-  for (auto &vertex : m_vertices) {
-    vertex.normal = glm::normalize(vertex.normal);
+  auto const texCoordAttribute{
+      abcg::glGetAttribLocation(program, "inTexCoord")};
+  if (texCoordAttribute >= 0) {
+    abcg::glEnableVertexAttribArray(texCoordAttribute);
+    auto const offset{offsetof(Vertex, texCoord)};
+    abcg::glVertexAttribPointer(texCoordAttribute, 2, GL_FLOAT, GL_FALSE,
+                                sizeof(Vertex),
+                                reinterpret_cast<void *>(offset));
   }
 
-  m_hasNormals = true;
+  // End of binding
+  abcg::glBindBuffer(GL_ARRAY_BUFFER, 0);
+  abcg::glBindVertexArray(0);
 }
 
 void Model::standardize() {
@@ -275,4 +268,11 @@ void Model::standardize() {
   for (auto &vertex : m_vertices) {
     vertex.position = (vertex.position - center) * scaling;
   }
+}
+
+void Model::destroy() {
+  abcg::glDeleteTextures(1, &m_diffuseTexture);
+  abcg::glDeleteBuffers(1, &m_EBO);
+  abcg::glDeleteBuffers(1, &m_VBO);
+  abcg::glDeleteVertexArrays(1, &m_VAO);
 }
