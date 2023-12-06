@@ -113,7 +113,7 @@ void Model::create() {
 
   // Create program
   m_program = abcg::createOpenGLProgram(
-      {{.source = assetsPath + "shaders/" + m_shadersName + ".vert", .stage = abcg::ShaderStage::Vertex}
+     {% raw %}{{.source = assetsPath + "shaders/" + m_shadersName + ".vert", .stage = abcg::ShaderStage::Vertex}}{% endraw %}
         .stage = abcg::ShaderStage::Vertex},
        {.source = assetsPath + "shaders/" + m_shadersName + ".frag",
         .stage = abcg::ShaderStage::Fragment}});
