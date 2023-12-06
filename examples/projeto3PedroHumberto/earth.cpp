@@ -1,6 +1,5 @@
 #include "earth.hpp"
 #include <cmath>
-#include <math.h>
 
 void Earth::transformModel() {
   /*

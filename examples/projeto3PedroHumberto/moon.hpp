@@ -2,7 +2,6 @@
 #define MOON_HPP_
 
 #include "planet.hpp"
-#include <glm/fwd.hpp>
 
 class Moon : public Planet {
 public:

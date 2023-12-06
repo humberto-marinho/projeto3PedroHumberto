@@ -1,5 +1,4 @@
 #include "moon.hpp"
-#include <glm/fwd.hpp>
 
 void Moon::transformModel() {
   /*
